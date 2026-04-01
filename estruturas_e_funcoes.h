@@ -142,13 +142,13 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
                      NoComprador **inicioCompradores, NoComprador **fimCompradores,
                      NoArquivado **topoArquivados) {
 
-    // Validação inicial: Se não há ninguém na fila
+    // faz uma validação inicial para ver se não existe ninguém na fila
     if (*inicioAguardando == NULL) {
         printf("\nNenhum cliente aguardando contato.\n");
         return;
     }
 
-    // O sistema inicia exibindo o cliente cadastrado há mais tempo (início da fila) [cite: 28, 69]
+    // inicia mostrando o cliente cadastrado a mais tempo
     NoAguardando *atual = *inicioAguardando;
     int opcao;
     char buscaNome[100];
@@ -159,27 +159,27 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
         printf("\nTelefone: %s | Email: %s", atual->contato.telefone, atual->contato.email);
         printf("\nData de Captacao: %s", atual->contato.data_captacao);
         printf("\n----------------------------");
-        printf("\n1. Proximo Cliente");    // [cite: 30]
-        printf("\n2. Cliente Anterior");  // [cite: 31]
-        printf("\n3. Buscar por Nome");   // [cite: 32]
-        printf("\n4. FINALIZAR ATENDIMENTO"); // [cite: 33]
+        printf("\n1. Proximo Cliente");    
+        printf("\n2. Cliente Anterior"); 
+        printf("\n3. Buscar por Nome"); 
+        printf("\n4. FINALIZAR ATENDIMENTO");
         printf("\n5. Sair do Modulo");
         printf("\nEscolha: ");
         scanf("%d", &opcao);
         getchar(); // Limpa buffer
 
         switch (opcao) {
-            case 1: // Exibir próximo
+            case 1: // exibir próximo
                 if (atual->prox != NULL) atual = atual->prox;
                 else printf("\nFim da fila.\n");
                 break;
 
-            case 2: // Exibir anterior [cite: 31]
+            case 2: // exibir anterior
                 if (atual->ant != NULL) atual = atual->ant;
                 else printf("\nInicio da fila.\n");
                 break;
 
-            case 3: // Buscar por nome (Exata)
+            case 3: // busca por nome
                 printf("Digite o nome completo: ");
                 fgets(buscaNome, 100, stdin);
                 buscaNome[strcspn(buscaNome, "\n")] = '\0';
@@ -209,18 +209,18 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
                 getchar();
 
                 if (comprou == 1) {
-                    //Alocando o nó para a fila de compradores
+                    //alocando o nó para a fila de compradores
                     NoComprador *novo = malloc(sizeof(NoComprador));
                     if (novo == NULL) {
                         printf("\nErro de alocacao de memoria.\n");
                         break;
                     }
 
-                    //Copia os dados de contatos que ja existem
+                    //copiando os dados de contatos que ja existem
                     novo->dados.contato = atual->contato;
                     novo->prox = NULL;
 
-                    //Coleta os dados adicionais
+                    //coletando os dados adicionais
                     printf("\n--- DADOS ADICIONAIS ---\n");
 
                     printf("CPF: ");
@@ -258,7 +258,7 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
                     novo->dados.endereco.cep[strcspn(novo->dados.endereco.cep, "\n")] = '\0';
                     getchar();
 
-                    //Enfileira na fila de compradores (FIFO)
+                    //enfileira na fila de compradores
                     if (*fimCompradores == NULL) {
                         *inicioCompradores = novo;
                         *fimCompradores = novo;
@@ -269,13 +269,13 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
 
                     printf("\nCliente movido para fila de compradores com sucesso!\n");
 
-                    //Remove da fila de aguardando e avança o ponteiro
+                    // remove da fila de aguardando e avança o ponteiro
                     NoAguardando *proximo = atual->prox;
                     removerAguardando(inicioAguardando, fimAguardando, atual);
                     atual = proximo;
 
                 } else {
-                    //Caso o cliente não tenha comprado
+                    // caso o cliente não tenha comprado
                     int arquivar;
                     printf("\nDeseja arquivar os dados do cliente para contato futuro?");
                     printf("\n1. Arquivar");
@@ -285,7 +285,7 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
                     getchar();
 
                     if (arquivar == 1) {
-                        // Empilha na pilha de arquivados (LIFO)
+                        // empilhando na pilha de arquivados
                         NoArquivado *noArq = malloc(sizeof(NoArquivado));
                         if (noArq == NULL) {
                             printf("\nErro de alocacao de memoria.\n");
@@ -299,7 +299,7 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
                         printf("\nCliente removido definitivamente do sistema.\n");
                     }
 
-                    //Remove da fila de aguardando em qualquer um dos casos
+                    //removendo da fila de aguardando em qualquer um dos casos
                     NoAguardando *proximo = atual->prox;
                     removerAguardando(inicioAguardando, fimAguardando, atual);
                     atual = proximo;
@@ -317,12 +317,12 @@ void realizarContato(NoAguardando **inicioAguardando, NoAguardando **fimAguardan
 }
 //============FOCO DA TAREFA: OPÇÃO 3 - Relatórios =======================
 int calcularDiasEspera(const char *data_captacao) {
-    // Faz o parse da string "DD/MM/AAAA"
+
     int dia, mes, ano;
     if (sscanf(data_captacao, "%d/%d/%d", &dia, &mes, &ano) != 3)
         return -1;
     
-    // Estrutura tm para a data de captação
+    // struct tm para a data de captação
     struct tm t_captacao = {0};
     t_captacao.tm_mday = dia;
     t_captacao.tm_mon  = mes - 1;
